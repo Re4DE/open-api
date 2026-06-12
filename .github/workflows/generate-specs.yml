@@ -1,0 +1,151 @@
+# .github/workflows/generate-specs.yml
+name: Generate OpenAPI Specs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-specs:
+    name: Build Specs - ${{ matrix.project.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - name: repo-one
+            url: https://github.com/eclipse-edc/Connector.git
+            branch: release/0.14.0
+          - name: repo-two
+            url: https://github.com/eclipse-edc/IdentityHub.git
+            branch: release/0.14.0
+          - name: repo-three
+            url: https://github.com/eclipse-edc/FederatedCatalog.git
+            branch: release/0.14.0
+
+    steps:
+      - name: Clone repository
+        run: git clone --branch ${{ matrix.project.branch }} --single-branch ${{ matrix.project.url }} project
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Generate OpenAPI specs
+        working-directory: project
+        run: ./gradlew resolve
+
+      - name: Merge OpenAPI specs per API group
+        working-directory: project
+        run: |
+          set -euo pipefail
+
+          OPENAPI_YAML_DIR="resources/openapi/yaml"
+          OUTPUT_DIR="build/merged-openapi"
+
+          echo "==> Preparing output directory: ${OUTPUT_DIR}"
+          rm -rf "${OUTPUT_DIR}"
+          mkdir -p "${OUTPUT_DIR}"
+
+          echo "==> Detecting API groups in ${OPENAPI_YAML_DIR}"
+
+          if [ ! -d "${OPENAPI_YAML_DIR}" ]; then
+            echo "ERROR: Directory not found: ${OPENAPI_YAML_DIR}"
+            exit 1
+          fi
+
+          mapfile -t API_GROUPS < <(
+            find "${OPENAPI_YAML_DIR}" \
+              -mindepth 1 \
+              -maxdepth 1 \
+              -type d \
+              -printf '%f\n' \
+              | sort
+          )
+
+          if [ "${#API_GROUPS[@]}" -eq 0 ]; then
+            echo "ERROR: No API groups found in ${OPENAPI_YAML_DIR}"
+            exit 1
+          fi
+
+          echo "==> Found API groups:"
+          printf ' - %s\n' "${API_GROUPS[@]}"
+
+          echo "==> Merging OpenAPI specs"
+
+          for apiGroup in "${API_GROUPS[@]}"; do
+            inputDir="${OPENAPI_YAML_DIR}/${apiGroup}"
+            outputFile="${OUTPUT_DIR}/${apiGroup}.yaml"
+
+            echo
+            echo "----"
+            echo "API group: ${apiGroup}"
+            echo "Input:     ${inputDir}"
+            echo "Output:    ${outputFile}"
+            echo "----"
+
+            ./gradlew \
+              -PapiTitle="${apiGroup}" \
+              -PapiDescription="API documentation for the ${apiGroup}" \
+              :mergeApiSpec \
+              --input="${inputDir}" \
+              --output="${outputFile}"
+          done
+
+          echo
+          echo "==> Done. Merged OpenAPI specs:"
+          ls -la "${OUTPUT_DIR}"
+
+      - name: Upload merged specs
+        uses: actions/upload-artifact@v4
+        with:
+          name: spec-${{ matrix.project.name }}
+          path: project/build/merged-openapi/
+          retention-days: 1
+
+  commit-specs:
+    name: Commit merged specs
+    runs-on: ubuntu-latest
+    needs: build-specs
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Download all spec artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Organize specs into target structure
+        run: |
+          set -euo pipefail
+          mkdir -p specs
+
+          for dir in artifacts/spec-*/; do
+            repo_name=$(basename "$dir" | sed 's/^spec-//')
+            mkdir -p "specs/${repo_name}"
+            find "$dir" -type f \( -name "*.yaml" -o -name "*.yml" \) | while read -r file; do
+              filename=$(basename "$file")
+              cp "$file" "specs/${repo_name}/${filename}"
+            done
+          done
+
+          echo "==> Final spec structure:"
+          find specs/ -type f | sort
+
+      - name: Commit and push specs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add specs/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: update OpenAPI specs [skip ci]"
+            git push
+          fi
