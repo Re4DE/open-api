@@ -12,13 +12,13 @@ jobs:
       fail-fast: false
       matrix:
         project:
-          - name: repo-one
+          - name: 1-connector
             url: https://github.com/eclipse-edc/Connector.git
             branch: release/0.14.0
-          - name: repo-two
+          - name: 2-identity-hub
             url: https://github.com/eclipse-edc/IdentityHub.git
             branch: release/0.14.0
-          - name: repo-three
+          - name: 3-federated-catalog
             url: https://github.com/eclipse-edc/FederatedCatalog.git
             branch: release/0.14.0
 
