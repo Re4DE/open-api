@@ -1,0 +1,81 @@
+name: "Generate Swagger UI"
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [ "Generate OpenAPI Specs" ]
+    types:
+      - completed
+
+jobs:
+  generate-swagger-ui:
+    name: "Generate Swagger Config"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v6
+      - name: Generate swagger-config.json and copy specs
+        run: |
+          set -euo pipefail
+
+          SPECS_DIR="specs"
+          OUTPUT_DIR="docs/_swagger/specs"
+          CONFIG_FILE="docs/_swagger/swagger-config.json"
+          
+          echo "==> Cleaning specs output directory"
+          rm -rf "${OUTPUT_DIR}"
+          mkdir -p "${OUTPUT_DIR}"
+
+          echo "==> Copying spec files and building config"
+          
+          # Collect all entries into a temp file (to avoid subshell issues with while+pipe)
+          ENTRIES_FILE=$(mktemp)
+
+          find "${SPECS_DIR}" -type f \( -name "*.yaml" -o -name "*.yml" \) | sort | while read -r file; do
+            # Structure: specs/<version>/<repo>/<api>.yaml
+            relative="${file#${SPECS_DIR}/}"
+            version=$(echo "${relative}" | cut -d'/' -f1)
+            repo=$(echo "${relative}" | cut -d'/' -f2)
+            api_file=$(basename "${relative}")
+
+            # Flatten: <version>/<repo>/<api>.yaml -> <version>-<repo>-<api>.yaml
+            flat_name="${version}-${repo}-${api_file}"
+
+            # Readable name: "[0.14.0] Connector / Management Api"
+            repo_display=$(echo "${repo}" | sed 's|^[0-9]*-||; s|-| |g' | sed 's|\b\(.\)|\u\1|g')
+            api_display=$(echo "${api_file}" | sed 's|\.ya\?ml$||; s|-| |g' | sed 's|\b\(.\)|\u\1|g')
+            display_name="[${version}] ${repo_display} / ${api_display}"
+
+            cp "$file" "${OUTPUT_DIR}/${flat_name}"
+
+            echo "{\"url\": \"specs/${flat_name}\", \"name\": \"${display_name}\"}" >> "${ENTRIES_FILE}"
+          done
+
+          # Build JSON from entries
+          echo '{"urls": [' > "${CONFIG_FILE}"
+          # Join entries with commas
+          sed -i '$ ! s/$/,/' "${ENTRIES_FILE}"
+          cat "${ENTRIES_FILE}" >> "${CONFIG_FILE}"
+          echo ']}' >> "${CONFIG_FILE}"
+          rm -f "${ENTRIES_FILE}"
+
+          echo "==> Generated config:"
+          cat "${CONFIG_FILE}"
+
+          echo ""
+          echo "==> Copied specs:"
+          ls -la "${OUTPUT_DIR}"
+      - name: Commit and push swagger specs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/swagger/specs/ docs/swagger/swagger-config.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: update Swagger UI specs [skip ci]"
+            git push
+          fi

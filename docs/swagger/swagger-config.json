@@ -1,0 +1,14 @@
+{"urls": [
+  {"url": "specs/1-connector-control-api.yaml", "name": "Connector / Control api"},
+  {"url": "specs/1-connector-dsp-api.yaml", "name": "Connector / Dsp api"},
+  {"url": "specs/1-connector-management-api.yaml", "name": "Connector / Management api"},
+  {"url": "specs/1-connector-observability-api.yaml", "name": "Connector / Observability api"},
+  {"url": "specs/1-connector-public-api.yaml", "name": "Connector / Public api"},
+  {"url": "specs/1-connector-version-api.yaml", "name": "Connector / Version api"},
+  {"url": "specs/2-identity-hub-credentials-api.yaml", "name": "Identity hub / Credentials api"},
+  {"url": "specs/2-identity-hub-identity-api.yaml", "name": "Identity hub / Identity api"},
+  {"url": "specs/2-identity-hub-issuer-admin-api.yaml", "name": "Identity hub / Issuer admin api"},
+  {"url": "specs/2-identity-hub-issuer-api.yaml", "name": "Identity hub / Issuer api"},
+  {"url": "specs/2-identity-hub-sts-api.yaml", "name": "Identity hub / Sts api"},
+  {"url": "specs/3-federated-catalog-catalog-api.yaml", "name": "Federated catalog / Catalog api"}
+]}

@@ -5,21 +5,26 @@ on:
 
 jobs:
   build-specs:
-    name: "Build Specs - ${{ matrix.project.name }}"
+    name: "Build Specs - ${{ matrix.project.name }}  (${{ matrix.project.version }})"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         project:
+          # === Version 0.14.0 ===
           - name: 1-connector
             url: https://github.com/eclipse-edc/Connector.git
             branch: release/0.14.0
+            version: "0.14.0"
           - name: 2-identity-hub
             url: https://github.com/eclipse-edc/IdentityHub.git
             branch: release/0.14.0
+            version: "0.14.0"
           - name: 3-federated-catalog
             url: https://github.com/eclipse-edc/FederatedCatalog.git
             branch: release/0.14.0
+            version: "0.14.0"
+          # === Version 0.15.0 ===
     steps:
       - name: Clone repository
         run: git clone --branch ${{ matrix.project.branch }} --single-branch ${{ matrix.project.url }} project
@@ -94,7 +99,7 @@ jobs:
       - name: Upload merged specs
         uses: actions/upload-artifact@v7
         with:
-          name: spec-${{ matrix.project.name }}
+          name: spec-${{ matrix.project.name }}-${{ matrix.project.version }}
           path: project/build/merged-openapi/
           retention-days: 1
 
@@ -117,11 +122,17 @@ jobs:
           mkdir -p specs
 
           for dir in artifacts/spec-*/; do
-            repo_name=$(basename "$dir" | sed 's/^spec-//')
-            mkdir -p "specs/${repo_name}"
+            # artifact name: spec-<repo-name>-<version>
+            dir_name=$(basename "$dir")
+            # Extract version and repo: spec-1-connector-0.14.0 -> repo=1-connector, version=0.14.0
+            without_prefix="${dir_name#spec-}"
+            version=$(echo "$without_prefix" | grep -oP '^\d+\.\d+\.\d+')
+            repo_name="${without_prefix#-${version}}"
+          
+            mkdir -p "specs/${version}/${repo_name}"
             find "$dir" -type f \( -name "*.yaml" -o -name "*.yml" \) | while read -r file; do
               filename=$(basename "$file")
-              cp "$file" "specs/${repo_name}/${filename}"
+              cp "$file" "specs/${version}/${repo_name}/${filename}"
             done
           done
 
