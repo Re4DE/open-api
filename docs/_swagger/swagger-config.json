@@ -1,0 +1,14 @@
+{"urls": [
+{"url": "specs/1-connector-control-api.yaml-control-api.yaml", "name": "[1-connector] Control Api.Yaml / Control Api"},
+{"url": "specs/1-connector-dsp-api.yaml-dsp-api.yaml", "name": "[1-connector] Dsp Api.Yaml / Dsp Api"},
+{"url": "specs/1-connector-management-api.yaml-management-api.yaml", "name": "[1-connector] Management Api.Yaml / Management Api"},
+{"url": "specs/1-connector-observability-api.yaml-observability-api.yaml", "name": "[1-connector] Observability Api.Yaml / Observability Api"},
+{"url": "specs/1-connector-public-api.yaml-public-api.yaml", "name": "[1-connector] Public Api.Yaml / Public Api"},
+{"url": "specs/1-connector-version-api.yaml-version-api.yaml", "name": "[1-connector] Version Api.Yaml / Version Api"},
+{"url": "specs/2-identity-hub-credentials-api.yaml-credentials-api.yaml", "name": "[2-identity-hub] Credentials Api.Yaml / Credentials Api"},
+{"url": "specs/2-identity-hub-identity-api.yaml-identity-api.yaml", "name": "[2-identity-hub] Identity Api.Yaml / Identity Api"},
+{"url": "specs/2-identity-hub-issuer-admin-api.yaml-issuer-admin-api.yaml", "name": "[2-identity-hub] Issuer Admin Api.Yaml / Issuer Admin Api"},
+{"url": "specs/2-identity-hub-issuer-api.yaml-issuer-api.yaml", "name": "[2-identity-hub] Issuer Api.Yaml / Issuer Api"},
+{"url": "specs/2-identity-hub-sts-api.yaml-sts-api.yaml", "name": "[2-identity-hub] Sts Api.Yaml / Sts Api"},
+{"url": "specs/3-federated-catalog-catalog-api.yaml-catalog-api.yaml", "name": "[3-federated-catalog] Catalog Api.Yaml / Catalog Api"}
+]}
