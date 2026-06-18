@@ -68,6 +68,13 @@ jobs:
           echo ""
           echo "==> Copied specs:"
           ls -la "${OUTPUT_DIR}"
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v8
+        with:
+          title: "chore: update Swagger UI specs"
+          commit-message: "chore: update Swagger UI specs [skip ci]"
+          branch: chore/update-swagger-specs
+          base: main
       - name: Commit and push swagger specs
         run: |
           git config user.name "github-actions[bot]"
