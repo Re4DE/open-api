@@ -124,9 +124,10 @@ jobs:
           for dir in artifacts/spec-*/; do
             # artifact name: spec-<repo-name>-<version>
             dir_name=$(basename "$dir")
+  
             # Extract version and repo: spec-1-connector-0.14.0 -> repo=1-connector, version=0.14.0
             without_prefix="${dir_name#spec-}"
-            version=$(echo "$without_prefix" | grep -oP '^\d+\.\d+\.\d+')
+            version="${without_prefix##*-}"
             repo_name="${without_prefix%-${version}}"
           
             mkdir -p "specs/${version}/${repo_name}"
