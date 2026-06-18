@@ -22,7 +22,7 @@ Welcome to the API documentation for the **Re4DE Stack**, including the Eclipse 
 
 Explore all available APIs interactively:
 
-- <a href="swagger/" class="btn btn-primary btn-large">Open Swagger UI (0.14.0)</a>
+<a href="swagger/" class="btn btn-primary btn-large">Open Swagger UI →</a>
 
 ## About
 
