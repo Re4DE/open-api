@@ -2,16 +2,11 @@ name: "Generate Swagger UI"
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: [ "Generate OpenAPI Specs" ]
-    types:
-      - completed
 
 jobs:
   generate-swagger-ui:
     name: "Generate Swagger Config"
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
       pull-requests: write
@@ -74,16 +69,6 @@ jobs:
         with:
           title: "chore: update Swagger UI specs"
           commit-message: "chore: update Swagger UI specs [skip ci]"
+          add-paths: docs/swagger/specs/, docs/swagger/swagger-config.json
           branch: chore/update-swagger-specs
           base: main
-      - name: Commit and push swagger specs
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/swagger/specs/ docs/swagger/swagger-config.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "chore: update Swagger UI specs [skip ci]"
-            git push
-          fi

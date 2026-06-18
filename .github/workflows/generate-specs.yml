@@ -145,5 +145,6 @@ jobs:
         with:
           title: "chore: update OpenAPI specs"
           commit-message: "chore: update OpenAPI specs [skip ci]"
+          add-paths: specs/
           branch: chore/update-openapi-specs
           base: main
