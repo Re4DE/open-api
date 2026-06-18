@@ -109,6 +109,7 @@ jobs:
     needs: build-specs
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v6
