@@ -67,8 +67,8 @@ jobs:
       - name: Create PR
         uses: peter-evans/create-pull-request@v8
         with:
-          title: "chore: update Swagger UI specs"
-          commit-message: "chore: update Swagger UI specs [skip ci]"
+          title: "wip(chore): update Swagger UI specs"
+          commit-message: "wip(chore): update Swagger UI specs [skip ci]"
           add-paths: docs/swagger/specs/, docs/swagger/swagger-config.json
           branch: chore/update-swagger-specs
           base: main

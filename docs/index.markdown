@@ -18,7 +18,7 @@ layout: default
 
 Welcome to the API documentation for the **Re4DE Stack**, including the Eclipse EDC APIs.
 
-## 🔌 Swagger UI
+## Swagger UI
 
 Explore all available APIs interactively:
 

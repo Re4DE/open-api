@@ -143,8 +143,8 @@ jobs:
       - name: Create PR
         uses: peter-evans/create-pull-request@v8
         with:
-          title: "chore: update OpenAPI specs"
-          commit-message: "chore: update OpenAPI specs [skip ci]"
+          title: "wip(chore): update OpenAPI specs"
+          commit-message: "wip(chore): update OpenAPI specs [skip ci]"
           add-paths: specs/
           branch: chore/update-openapi-specs
           base: main
