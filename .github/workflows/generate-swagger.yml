@@ -18,8 +18,8 @@ jobs:
           set -euo pipefail
 
           SPECS_DIR="specs"
-          OUTPUT_DIR="docs/_swagger/specs"
-          CONFIG_FILE="docs/_swagger/swagger-config.json"
+          OUTPUT_DIR="docs/swagger/specs"
+          CONFIG_FILE="docs/swagger/swagger-config.json"
           
           echo "==> Cleaning specs output directory"
           rm -rf "${OUTPUT_DIR}"
