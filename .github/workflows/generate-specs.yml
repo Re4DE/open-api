@@ -3,6 +3,9 @@ name: "Generate OpenAPI Specs"
 on:
   workflow_dispatch:
 
+permissions:
+  packages: write
+
 jobs:
   build-specs:
     name: "Build Specs - ${{ matrix.project.name }}  (${{ matrix.project.version }})"
