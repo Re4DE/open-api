@@ -3,8 +3,7 @@ name: "Generate OpenAPI Specs"
 on:
   workflow_dispatch:
 
-permissions:
-  packages: write
+permissions: {}
 
 jobs:
   build-specs:

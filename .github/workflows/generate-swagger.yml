@@ -3,8 +3,7 @@ name: "Generate Swagger UI"
 on:
   workflow_dispatch:
 
-permissions:
-  packages: write
+permissions: {}
 
 jobs:
   generate-swagger-ui:
