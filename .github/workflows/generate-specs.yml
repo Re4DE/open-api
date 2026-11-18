@@ -26,7 +26,15 @@ jobs:
             url: https://github.com/eclipse-edc/FederatedCatalog.git
             branch: release/0.14.0
             version: "0.14.0"
-          # === Version 0.15.0 ===
+          # === Version 0.18.2 ===
+          - name: 1-connector
+            url: https://github.com/eclipse-edc/Connector.git
+            branch: bugfix/0.18.2
+            version: "0.18.2"
+          - name: 2-identity-hub
+            url: https://github.com/eclipse-edc/IdentityHub.git
+            branch: bugfix/0.18.2
+            version: "0.18.2"
     steps:
       - name: Clone repository
         run: git clone --branch ${{ matrix.project.branch }} --single-branch ${{ matrix.project.url }} project
